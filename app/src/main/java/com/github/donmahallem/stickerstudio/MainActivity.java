@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionTask.addOnFailureListener(MainActivity.this, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Log.e(TAG, "App Indexing API: Failed to end view action on " + TITLE + ". "
+                Timber.e( "App Indexing API: Failed to end view action on " + TITLE + ". "
                         + exception.getMessage());
             }
         });
