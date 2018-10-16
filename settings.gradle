@@ -1,0 +1,1 @@
+include ':app', ':opendotaapi', ':dota2gamefileapi'
