@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import timber.log.Timber;
 
 /**
  * Provider that makes the stickers queryable by other applications.
@@ -39,6 +40,7 @@ public class StickerProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
+        Timber.d("getType(%s)",uri.toString());
         final File file = uriToFile(uri);
         if (!isFileInRoot(file)) {
             throw new SecurityException("File is not in root: " + file);

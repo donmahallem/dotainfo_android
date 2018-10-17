@@ -29,6 +29,9 @@ public class AppIndexingUpdateService extends JobIntentService {
 
     // Job-ID must be unique across your whole app.
     private static final int UNIQUE_JOB_ID = 42;
+    private static final String STICKER_URL_PATTERN = "mystickers://sticker/%s";
+    private static final String STICKER_HERO_URL_PATTERN = "mystickers://sticker/hero/%s";
+    private static final String STICKER_PACK_URL_PATTERN = "mystickers://sticker/pack/%s";
     private final String STICKER_PACK_NAME = "Dota2HeroStickerPack";
 
     public static void enqueueWork(Context context) {
@@ -71,7 +74,7 @@ public class AppIndexingUpdateService extends JobIntentService {
                             Timber.d("Updated heros");
                         }
                     });
-        }else{
+        } else {
             Timber.d("No types found");
         }
     }
@@ -79,7 +82,7 @@ public class AppIndexingUpdateService extends JobIntentService {
     private void createHeroIndexables(List<Indexable> indexables, List<BaseHero> heroes) {
 
         for (BaseHero hero : heroes) {
-            if(hero.getWorkshopGuideName()==null){
+            if (hero.getWorkshopGuideName() == null) {
                 continue;
             }
             Timber.d("Got hero %s", hero.toString());
@@ -88,7 +91,7 @@ public class AppIndexingUpdateService extends JobIntentService {
             }
             final String shortName = hero.getNpcHeroName().replace("npc_dota_hero_", "");
             String imageUrl = "http://cdn.dota2.com/apps/dota2/images/heroes/" + shortName + "_full.png";
-            String webUrl = "https://www.dota2.com/hero/" + shortName + "/";
+            String webUrl = "https://www.dota2.com/hero/" + hero.getHeroID() + "/";
             final Indexable.Builder builder = new Indexable.Builder()
                     .setName(hero.getWorkshopGuideName())
                     .setUrl(webUrl)
@@ -110,23 +113,21 @@ public class AppIndexingUpdateService extends JobIntentService {
         StickerBuilder stickerBuilder = Indexables.stickerBuilder()
                 .setName(baseHero.getWorkshopGuideName())
                 .setImage(imageUrl)
-                .setUrl(String.format(STICKER_URL_PATTERN, baseHero.getHeroID()))
-                .setDescription("content description")
+                .setUrl(String.format(STICKER_HERO_URL_PATTERN, baseHero.getHeroID()))
+                .setDescription(baseHero.getWorkshopGuideName())
                 .setIsPartOf(Indexables.stickerPackBuilder()
                         .setName(STICKER_PACK_NAME))
                 .put("dota2", baseHero.getWorkshopGuideName());
         return stickerBuilder;
     }
 
-    private static final String STICKER_URL_PATTERN = "mystickers://sticker/%s";
-    private static final String STICKER_PACK_URL_PATTERN = "mystickers://sticker/pack/%s";
     private void createStickerPack(List<Indexable> indexables, List<BaseHero> heroes) {
         List<StickerBuilder> stickerBuilders = new ArrayList<>();
         for (BaseHero hero : heroes) {
-            if(hero.getWorkshopGuideName()==null){
+            if (hero.getWorkshopGuideName() == null) {
                 continue;
             }
-            StickerBuilder builder=createSticker(hero);
+            StickerBuilder builder = createSticker(hero);
             indexables.add(builder.build());
             stickerBuilders.add(builder);
 
