@@ -1,20 +1,15 @@
 package com.github.donmahallem.stickerstudio;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.donmahallem.dota2gamefileapi.BaseHero;
 import com.github.donmahallem.opendotaapi.GithubDotaClient;
-import com.github.donmahallem.stickerstudio.indexing.AppIndexingUpdateService;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseAppIndex;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.Indexable;
@@ -24,7 +19,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import okhttp3.HttpUrl;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,7 +27,7 @@ import timber.log.Timber;
 public class HeroDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView mTxtHeroName;
-    private int articleId=-1;
+    private int articleId = -1;
     private BaseHero mHero;
     private String APP_URI;
 
@@ -41,16 +35,17 @@ public class HeroDetailActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hero_detail);
-        this.mTxtHeroName=findViewById(R.id.txtHeroName);
-        if(this.getIntent().getData()!=null){
-            this.articleId=Integer.parseInt(this.getIntent().getData().getLastPathSegment());
+        this.mTxtHeroName = findViewById(R.id.txtHeroName);
+        if (this.getIntent().getData() != null) {
+            this.articleId = Integer.parseInt(this.getIntent().getData().getLastPathSegment());
         }
         Timber.d(this.getIntent().getData().toString());
     }
-    private void setHero(BaseHero hero){
-        this.mHero=hero;
+
+    private void setHero(BaseHero hero) {
+        this.mHero = hero;
         final Uri BASE_URL = Uri.parse("https://www.dota2.com/heroes/");
-        APP_URI = BASE_URL.buildUpon().appendPath(""+articleId).build().toString();
+        APP_URI = BASE_URL.buildUpon().appendPath("" + articleId).build().toString();
         Indexable articleToIndex = new Indexable.Builder()
                 .setName(hero.getWorkshopGuideName())
                 .setUrl(APP_URI)
@@ -74,23 +69,24 @@ public class HeroDetailActivity extends AppCompatActivity implements View.OnClic
         actionTask.addOnFailureListener(HeroDetailActivity.this, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Timber.e( "App Indexing API: Failed to end view action on . "
+                Timber.e("App Indexing API: Failed to end view action on . "
                         + exception.getMessage());
             }
         });
     }
+
     @Override
     public void onStart() {
         super.onStart();
-        if (articleId <0) return;
+        if (articleId < 0) return;
         GithubDotaClient client = new GithubDotaClient(getCacheDir());
         Call<List<BaseHero>> heroCall = client.getApi().getHeroes();
         heroCall.enqueue(new Callback<List<BaseHero>>() {
             @Override
             public void onResponse(Call<List<BaseHero>> call, Response<List<BaseHero>> response) {
-                if(response.isSuccessful()){
-                    for(BaseHero baseHero:response.body()){
-                        if(baseHero.getHeroID()==articleId){
+                if (response.isSuccessful()) {
+                    for (BaseHero baseHero : response.body()) {
+                        if (baseHero.getHeroID() == articleId) {
                             setHero(baseHero);
                             return;
                         }
@@ -136,7 +132,7 @@ public class HeroDetailActivity extends AppCompatActivity implements View.OnClic
         actionTask.addOnFailureListener(HeroDetailActivity.this, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Timber.e( "App Indexing API: Failed to end view action on . "
+                Timber.e("App Indexing API: Failed to end view action on . "
                         + exception.getMessage());
             }
         });
@@ -144,7 +140,7 @@ public class HeroDetailActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
         }
     }
 

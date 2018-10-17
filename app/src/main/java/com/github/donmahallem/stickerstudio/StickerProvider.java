@@ -40,7 +40,7 @@ public class StickerProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        Timber.d("getType(%s)",uri.toString());
+        Timber.d("getType(%s)", uri.toString());
         final File file = uriToFile(uri);
         if (!isFileInRoot(file)) {
             throw new SecurityException("File is not in root: " + file);

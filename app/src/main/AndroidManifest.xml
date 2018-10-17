@@ -3,6 +3,8 @@
           package="com.github.donmahallem.stickerstudio">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:name=".StickerStudioApplication"
         android:allowBackup="true"
@@ -76,6 +78,8 @@
                 <action android:name="com.google.firebase.appindexing.UPDATE_INDEX"/>
             </intent-filter>
         </receiver>
+        <service android:name=".sync.RemoteConfigSyncService"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
 
 </manifest>
