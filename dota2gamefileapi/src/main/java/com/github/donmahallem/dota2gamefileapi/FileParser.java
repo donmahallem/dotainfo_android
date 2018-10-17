@@ -1,7 +1,9 @@
 package com.github.donmahallem.dota2gamefileapi;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -10,21 +12,33 @@ import java.util.regex.Pattern;
 
 import okio.BufferedSource;
 import okio.Okio;
+import okio.Source;
 
 public abstract class FileParser {
 
-    private final String mInputFile;
+    private final BufferedSource mInputFile;
 
-    public FileParser(String inputFile) {
-        this.mInputFile = inputFile;
+    public FileParser(String inputFile) throws FileNotFoundException {
+        this(new File(inputFile));
+    }
+
+    public FileParser(File inputFile) throws FileNotFoundException {
+        this(Okio.source(inputFile));
+    }
+
+    public FileParser(Source source){
+        if(source instanceof BufferedSource){
+            this.mInputFile=(BufferedSource)source;
+        }else{
+            this.mInputFile=Okio.buffer(source);
+        }
     }
 
     public void parse() throws IOException {
-        BufferedSource bufferedSource = Okio.buffer(Okio.source(new File(this.mInputFile)));
         Stack<String> currentPath = new Stack<>();
         String name=null;
         while (true) {
-            String line = bufferedSource.readUtf8Line();
+            String line = this.mInputFile.readUtf8Line();
             if (line == null) break;
             line=line.trim();
             if (line.matches("^\\/\\/.*")) {
