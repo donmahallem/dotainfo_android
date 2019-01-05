@@ -17,6 +17,7 @@ public class BaseHero {
     private final String mNameAliases;
     private final int mHeroID;
     private final int mHeroGlowColor;
+    private final String mNpcHeroName;
 
     private BaseHero(Builder builder) {
         this.mStatusHealth = builder.getStatusHealth();
@@ -33,6 +34,11 @@ public class BaseHero {
         this.mNameAliases = builder.getNameAliases();
         this.mHeroID = builder.getHeroID();
         this.mHeroGlowColor = builder.getHeroGlowColor();
+        this.mNpcHeroName = builder.getNpcHeroName();
+    }
+
+    public String getNpcHeroName() {
+        return mNpcHeroName;
     }
 
     public int getStatusHealth() {
@@ -111,7 +117,7 @@ public class BaseHero {
                 '}';
     }
 
-    private String getWorkshopGuideName() {
+    public String getWorkshopGuideName() {
         return this.mWorkshopGuideName;
     }
 
@@ -133,6 +139,7 @@ public class BaseHero {
         private String[] mRole;
         private int[] mRoleLevels;
         private int mComplexity;
+        private String mNpcHeroName;
 
         public Builder() {
 
@@ -153,6 +160,16 @@ public class BaseHero {
             this.setNameAliases(baseHero.getNameAliases());
             this.setHeroGlowColor(baseHero.getHeroGlowColor());
             this.setHeroID(baseHero.getHeroID());
+            this.setNpcHeroName(baseHero.getNpcHeroName());
+        }
+
+        public String getNpcHeroName() {
+            return mNpcHeroName;
+        }
+
+        public Builder setNpcHeroName(String name) {
+            this.mNpcHeroName = name;
+            return this;
         }
 
         public String[] getRole() {
@@ -204,11 +221,6 @@ public class BaseHero {
             return mHeroGlowColor;
         }
 
-        public Builder setHeroGlowColor(int heroGlowColor) {
-            mHeroGlowColor = heroGlowColor;
-            return this;
-        }
-
         public Builder setHeroGlowColor(String heroGlowColor) {
             if (heroGlowColor == null) {
                 this.mHeroGlowColor = 0;
@@ -221,7 +233,12 @@ public class BaseHero {
             final int red = Integer.parseInt(split[0]);
             final int blue = Integer.parseInt(split[1]);
             final int green = Integer.parseInt(split[2]);
-            this.mHeroGlowColor = red<<16+blue<<8+green;
+            this.mHeroGlowColor = red << 16 + blue << 8 + green;
+            return this;
+        }
+
+        public Builder setHeroGlowColor(int heroGlowColor) {
+            mHeroGlowColor = heroGlowColor;
             return this;
         }
 

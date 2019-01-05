@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.github.donmahallem.stickerstudio.indexing.AppIndexingUpdateService;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -16,12 +17,17 @@ import com.google.firebase.appindexing.FirebaseAppIndex;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.Indexable;
 import com.google.firebase.appindexing.builders.Actions;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private final static String TITLE = "Random article";
+    private final static String TAG = "JJJ";
+    private final static String articleId = "12349";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +50,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         this.findViewById(R.id.btnStart).setOnClickListener(this);
         this.findViewById(R.id.btnStop).setOnClickListener(this);
+        FirebaseRemoteConfig.getInstance()
+                .setDefaults(R.xml.app_config_defaults);
+        FirebaseRemoteConfig.getInstance()
+                .fetch()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(Task<Void> task) {
+                        FirebaseRemoteConfig.getInstance()
+                                .activateFetched();
+                    }
+                });
+        Timber.d("Default version: %s", FirebaseRemoteConfig.getInstance()
+                .getString("current_patch_version"));
     }
 
-    private final static String TITLE="Random article";
-    private final static String TAG="JJJ";
-    private final static String articleId="12349";
     @Override
     public void onStart() {
         super.onStart();
@@ -60,9 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setName(TITLE)
                 .setUrl(APP_URI)
                 .setDescription("Good article")
-                .setKeywords("a","long","keyword")
+                .setKeywords("a", "long", "keyword")
                 .setMetadata(new Indexable.Metadata.Builder()
-                .setWorksOffline(false))
+                        .setWorksOffline(false))
                 .build();
 
         Task<Void> task = FirebaseAppIndex.getInstance().update(articleToIndex);
@@ -124,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionTask.addOnFailureListener(MainActivity.this, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Timber.e( "App Indexing API: Failed to end view action on " + TITLE + ". "
+                Timber.e("App Indexing API: Failed to end view action on " + TITLE + ". "
                         + exception.getMessage());
             }
         });
@@ -132,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btnStart:
                 startProgress();
                 break;
@@ -148,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startProgress() {
-        final Action.Builder builder=new Action.Builder(Action.Builder.LIKE_ACTION);
+        final Action.Builder builder = new Action.Builder(Action.Builder.LIKE_ACTION);
         builder.setActionStatus(Action.Builder.STATUS_TYPE_COMPLETED);
         final Uri BASE_URL = Uri.parse("https://www.example.com/articles/");
         final String APP_URI = BASE_URL.buildUpon().appendPath(articleId).build().toString();
@@ -156,19 +172,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setName("Example article");
         FirebaseUserActions.getInstance()
                 .start(builder.build())
-        .addOnSuccessListener(
-                new OnSuccessListener<Void>() {
+                .addOnSuccessListener(
+                        new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Timber.d("Logged successfully");
+                            }
+                        })
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                            Timber.d("Logged successfully");
+                    public void onFailure(Exception e) {
+                        Timber.e(e);
                     }
-                }        )
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(Exception e) {
-                Timber.e(e);
-            }
-        });
+                });
 
     }
 }

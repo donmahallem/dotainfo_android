@@ -1,6 +1,11 @@
 package com.github.donmahallem.dota2gamefileapi;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
+
+import okio.Source;
 
 public class HeroesFileParser extends FileParser {
     private BaseHero baseHero;
@@ -19,8 +24,22 @@ public class HeroesFileParser extends FileParser {
     private final static String KEY_HERO_GLOW_COLOR="HeroGlowColor";
     private final static String KEY_NAME_ALIASES="NameAliases";
     private final static String KEY_HERO_ID="HeroID";
-    public HeroesFileParser(String inputFile) {
+
+    public List<BaseHero> getHeroes() {
+        return mHeroes;
+    }
+
+    private List<BaseHero> mHeroes=new ArrayList<>();
+    public HeroesFileParser(String inputFile) throws FileNotFoundException {
         super(inputFile);
+    }
+
+    public HeroesFileParser(File inputFile) throws FileNotFoundException {
+        super(inputFile);
+    }
+
+    public HeroesFileParser(Source source) {
+        super(source);
     }
 
     @Override
@@ -88,7 +107,8 @@ public class HeroesFileParser extends FileParser {
             if(name.equals("npc_dota_hero_base")){
                 baseHero=currentBuilder.build();
             }else{
-                System.out.println(currentBuilder.build().toString());
+                currentBuilder.setNpcHeroName(name);
+                this.mHeroes.add(currentBuilder.build());
             }
         }
     }
