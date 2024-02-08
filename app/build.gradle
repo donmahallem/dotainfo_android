@@ -33,6 +33,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation project(':opendotaapi')
-    implementation 'com.google.firebase:firebase-perf:20.5.1'
+    implementation 'com.google.firebase:firebase-perf:20.5.2'
     implementation 'com.google.firebase:firebase-config:21.6.1'
 }
